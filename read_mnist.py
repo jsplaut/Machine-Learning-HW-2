@@ -8,7 +8,9 @@ the format of the data.
 Author: RR
 """
 
-import cPickle, gzip, numpy
+import cPickle as cPickle
+import gzip
+import numpy
 
 def pretty_print(image_example):
     """ Pretty prints an MNIST training example.
@@ -20,7 +22,7 @@ def pretty_print(image_example):
     Returns:
         None.
     """
-    print numpy.array_str(image_example, precision=1, max_line_width=142)
+    print (numpy.array_str(image_example, precision=1, max_line_width=142))
     
 
 def load_data():
