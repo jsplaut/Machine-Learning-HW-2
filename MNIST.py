@@ -15,9 +15,9 @@ def logisticRegression1(xd):
     yTest = test_set[1]
     xTest = test_set[0]
 
-    # scaler = StandardScaler()
-    # xTrain = scaler.fit_transform(xTrain)
-    # xTest = scaler.transform(xTest)
+    scaler = StandardScaler()
+    xTrain = scaler.fit_transform(xTrain)
+    xTest = scaler.transform(xTest)
 
     clf = LogisticRegression(C=1.0,
                             multi_class='multinomial',
@@ -54,12 +54,14 @@ def logiCrossValidation():
 
     yTrain = train_set[1]
     xTrain = train_set[0]
+    yTest = test_set[1]
+    xTest = test_set[0]
 
-    kfold = model_selection.KFold(n_splits=10, random_state=7)
+    kfold = model_selection.KFold(n_splits=5, random_state=7)
     modelCV = LogisticRegression()
-    scoring = 'accuracy'
-    results = model_selection.cross_val_score(modelCV, xTrain, yTrain, cv=kfold, scoring=scoring)
-    print("10-fold cross validation average accuracy: %.3f" % (results.mean()))
+    results = model_selection.cross_val_predict(modelCV, xTrain, yTrain, cv=kfold)
+    print("5-fold cross validation average accuracy: %.3f" % metrics.accuracy_score(yTrain, results))
+    print(metrics.classification_report(yTrain, results, digits=3))
 
 def baseLines(xd):
     train_set, test_set = load_data()
@@ -96,7 +98,7 @@ def knnDistance(xd):
 
     matrix = metrics.confusion_matrix(yTest, pred)
 
-    print(metrics.classification_report(yTest, pred))
+    print(metrics.classification_report(yTest, pred, digits = 4))
     print(matrix) 
     print("Test score with L1 penalty: %.4f" % score)
     
@@ -108,14 +110,15 @@ def knn(xD):
     yTest = test_set[1]
     xTest = test_set[0]
 
-    nneighbors = [3,5,7,9,11]
-    for n in nneighbors:
-        clf = neighbors.KNeighborsClassifier(n_neighbors = n)
-        clf.fit(xTrain, yTrain)
-        pred = clf.predict(xTest)
-        score = clf.score(xTest, yTest)
-        print("\n Accuracy Score for %d neighbors: %.4f \n" % (n, score))
-        print(metrics.classification_report(yTest,pred, digits = 4))
+    # nneighbors = [3,5,7,9,11]
+    # for n in nneighbors:
+    clf = neighbors.KNeighborsClassifier(n_neighbors = 3)
+    clf.fit(xTrain, yTrain)
+    pred = clf.predict(xTest)
+    score = clf.score(xTest, yTest)
+    print("MSE: %.4f \n" % metrics.mean_squared_error(yTest, pred))
+    print("\n Accuracy Score for %d neighbors: %.4f \n" % (3, score))
+    print(metrics.classification_report(yTest,pred, digits = 4))
 
 def crossValidationLOO(xd):
     trial_set, test_set = load_data()
@@ -131,7 +134,7 @@ def crossValidationLOO(xd):
     # print("10-fold cross validation average accuracy: %.3f" % (score.mean()))
 
     pred = cross_val_predict(clf, xTrial, yTrial, cv=10)
-    print("Accuracy of prediction model: %.4f \n" % metrics.r2_score(yTest, pred))
+    print("Accuracy of prediction model: %.4f \n" % metrics.accuracy_score(yTrial, pred))
     print(metrics.classification_report(yTrial, pred, digits = 3))
 
 
@@ -139,6 +142,6 @@ def crossValidationLOO(xd):
 #logisticRegression1(1)
 #baseLines(1)
 #logiCrossValidation()
-#knnDistance(1)
+knnDistance(1)
 #knn(1)
-crossValidationLOO(1)
+#crossValidationLOO(1)
